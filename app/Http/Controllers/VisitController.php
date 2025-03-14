@@ -6,6 +6,7 @@ use App\Http\Requests\VisitRequest;
 use App\Models\Visit;
 use App\Services\VisitService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 
 class VisitController extends Controller
@@ -74,11 +75,9 @@ class VisitController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Visit $visit): JsonResponse
+    public function destroy(Visit $visit): Response
     {
-        $visit->delete();
-        return response()->json([
-            'message' => 'Visit deleted successfully.'
-        ], 204);
+        $this->visitService->deleteVisit($visit);
+        return response()->noContent();
     }
 }

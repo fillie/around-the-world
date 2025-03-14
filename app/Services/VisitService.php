@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\DTO\VisitDTO as VisitDTO;
-use App\Models\Visit as VisitModel;
+use App\Models\Visit;
 use Illuminate\Support\Facades\Auth;
 
 class VisitService
@@ -11,9 +11,9 @@ class VisitService
     /**
      * Create a new visit record.
      */
-    public function createVisit(VisitDTO $visitData): VisitService
+    public function createVisit(VisitDTO $visitData): Visit
     {
-        return VisitService::create([
+        return Visit::create([
             'user_id'        => Auth::id(),
             'country_id'     => $visitData->country_id,
             'date_visited'   => $visitData->date_visited,
@@ -25,7 +25,7 @@ class VisitService
     /**
      * Update an existing visit record.
      */
-    public function updateVisit(VisitModel $visit, VisitDTO $visitData): VisitModel
+    public function updateVisit(Visit $visit, VisitDTO $visitData): Visit
     {
         $visit->update([
             'country_id'     => $visitData->country_id,
@@ -35,5 +35,16 @@ class VisitService
         ]);
 
         return $visit;
+    }
+
+    /**
+     * Delete a visit.
+     *
+     * @param Visit $visit
+     * @return void
+     */
+    public function deleteVisit(Visit $visit): void
+    {
+        $visit->delete();
     }
 }
