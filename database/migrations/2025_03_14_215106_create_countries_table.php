@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('code', 3)->unique();
             $table->string('capital')->nullable();
+            $table->string('continent')->nullable()->index();
             $table->timestamps();
         });
 
@@ -36,7 +37,7 @@ return new class extends Migration
                         'updated_at' => now(),
                     ];
                 }, $countries);
-                
+
                 DB::table('countries')->insert($data);
             }
         }
