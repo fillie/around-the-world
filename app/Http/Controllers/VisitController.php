@@ -39,7 +39,7 @@ class VisitController extends Controller
         $visit = $this->visitService->createVisit($request->toDTO());
 
         return response()->json([
-            'message' => 'VisitDTO recorded successfully.',
+            'message' => 'Visit recorded successfully.',
             'data' => $visit
         ], 201);
     }
