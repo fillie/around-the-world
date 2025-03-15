@@ -60,7 +60,7 @@ class VisitController extends Controller
      * Update an existing visit.
      *
      * @param VisitRequest $request
-     * @param Visit $visit$request->toDTO()
+     * @param Visit $visit
      * @return JsonResponse
      */
     public function update(VisitRequest $request, Visit $visit): JsonResponse
