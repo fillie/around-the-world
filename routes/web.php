@@ -5,12 +5,10 @@ use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/country', [CountryController::class, 'index']);
-Route::get('/country/{country}', [CountryController::class, 'show']);
-
 // API routes
 Route::prefix('api')->middleware('auth:api')->group(function () {
-    Route::apiResource('visits', VisitController::class);
+    Route::apiResource('visit', VisitController::class);
+    Route::apiResource('country', CountryController::class);
 });
 
 require __DIR__.'/settings.php';
