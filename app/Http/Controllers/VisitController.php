@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\VisitDTO;
 use App\Http\Requests\VisitRequest;
 use App\Models\Visit;
 use App\Services\VisitService;
@@ -37,7 +38,7 @@ class VisitController extends Controller
      */
     public function store(VisitRequest $request): JsonResponse
     {
-        $visit = $this->visitService->createVisit($request->toDTO());
+        $visit = $this->visitService->createVisit(VisitDTO::fromRequest($request->all()));
 
         return response()->json([
             'message' => 'Visit recorded successfully.',
@@ -59,12 +60,12 @@ class VisitController extends Controller
      * Update an existing visit.
      *
      * @param VisitRequest $request
-     * @param Visit $visit
+     * @param Visit $visit$request->toDTO()
      * @return JsonResponse
      */
     public function update(VisitRequest $request, Visit $visit): JsonResponse
     {
-        $visit = $this->visitService->updateVisit($visit, $request->toDTO());
+        $visit = $this->visitService->updateVisit($visit, VisitDTO::fromRequest($request->all()));
 
         return response()->json([
             'message' => 'Visit updated successfully.',

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO;
+namespace App\DTOs;
 
 final class VisitDTO
 {
@@ -10,4 +10,14 @@ final class VisitDTO
         public int $length_of_visit,
         public ?string $notes
     ) {}
+
+    public static function fromRequest(array $data): self
+    {
+        return new self(
+            $data['country_id'],
+            $data['date_visited'],
+            $data['length_of_visit'],
+            $data['notes'],
+        );
+    }
 }
