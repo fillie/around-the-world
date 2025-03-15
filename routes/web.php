@@ -1,20 +1,16 @@
 <?php
 
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
 
 Route::get('/country', [CountryController::class, 'index']);
 Route::get('/country/{country}', [CountryController::class, 'show']);
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+// API routes
+Route::prefix('api')->middleware('auth:api')->group(function () {
+    Route::apiResource('visits', VisitController::class);
 });
 
 require __DIR__.'/settings.php';
