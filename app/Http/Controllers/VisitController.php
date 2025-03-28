@@ -25,25 +25,20 @@ class VisitController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => $this->visitService->getAllVisits()
+            'data' => VisitResource::collection(
+                $this->visitService->getAllVisits()
+            )
         ]);
     }
 
     /**
      * Store a new visit.
-     *
-     * @param VisitRequest $request
-     * @return JsonResponse
      */
     public function store(VisitRequest $request): JsonResponse
     {
-        $visit = $this->visitService->createVisit(new VisitDTO(
-            user: $request->user(),
-            countryId: (int) $request->input('country_id'),
-            dateVisited: $request->input('date_visited'),
-            lengthOfVisit: (int) $request->input('length_of_visit'),
-            notes: $request->input('notes')
-        ));
+        $visit = $this->visitService->createVisit(
+            VisitDTO::fromRequest($request)
+        );
 
         return response()->json([
             'message' => 'Visit recorded successfully.',
@@ -57,26 +52,19 @@ class VisitController extends Controller
     public function show(Visit $visit): JsonResponse
     {
         return response()->json([
-            'data' => $visit
+            'data' => VisitResource::make($visit)
         ]);
     }
 
     /**
      * Update an existing visit.
-     *
-     * @param VisitRequest $request
-     * @param Visit $visit
-     * @return JsonResponse
      */
     public function update(VisitRequest $request, Visit $visit): JsonResponse
     {
-        $visit = $this->visitService->updateVisit($visit, new VisitDTO(
-            user: $request->user(),
-            countryId: (int) $request->input('country_id'),
-            dateVisited: $request->input('date_visited'),
-            lengthOfVisit: (int) $request->input('length_of_visit'),
-            notes: $request->input('notes')
-        ));
+        $visit = $this->visitService->updateVisit(
+            $visit,
+            VisitDTO::fromRequest($request)
+        );
 
         return response()->json([
             'message' => 'Visit updated successfully.',
