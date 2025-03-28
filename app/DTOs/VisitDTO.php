@@ -2,22 +2,40 @@
 
 namespace App\DTOs;
 
+use App\Http\Requests\VisitRequest;
+use App\Models\User;
+
 final class VisitDTO
 {
+    /**
+     * @param User $user
+     * @param int $countryId
+     * @param string $dateVisited
+     * @param int $lengthOfVisit
+     * @param string|null $notes #
+     */
     public function __construct(
-        public int $country_id,
-        public string $date_visited,
-        public int $length_of_visit,
+        public User $user,
+        public int $countryId,
+        public string $dateVisited,
+        public int $lengthOfVisit,
         public ?string $notes
     ) {}
 
-    public static function fromRequest(array $data): self
+    /**
+     * Create a DTO from a form request.
+     *
+     * @param VisitRequest $request
+     * @return self
+     */
+    public static function fromRequest(VisitRequest $request): self
     {
         return new self(
-            $data['country_id'],
-            $data['date_visited'],
-            $data['length_of_visit'],
-            $data['notes'],
+            user: $request->user(),
+            countryId: (int) $request->input('country_id'),
+            dateVisited: $request->input('date_visited'),
+            lengthOfVisit: (int) $request->input('length_of_visit'),
+            notes: $request->input('notes')
         );
     }
 }

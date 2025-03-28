@@ -2,49 +2,61 @@
 
 namespace App\Services;
 
-use App\DTOs\VisitDTO as VisitDTO;
 use App\Models\Visit;
-use Illuminate\Support\Facades\Auth;
+use App\DTOs\VisitDTO;
+use App\Repositories\Contracts\VisitRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
-class VisitService
+readonly class VisitService
 {
     /**
-     * Create a new visit record.
+     * Inject the repository into the service.
      */
-    public function createVisit(VisitDTO $visitData): Visit
+    public function __construct(
+        private VisitRepositoryInterface $visitRepository,
+    ) {}
+
+    /**
+     * Create a new Visit record using individual properties from the DTO.
+     */
+    public function createVisit(VisitDTO $visitDTO): Visit
     {
-        return Visit::create([
-            'user_id'        => Auth::id(),
-            'country_id'     => $visitData->country_id,
-            'date_visited'   => $visitData->date_visited,
-            'length_of_visit'=> $visitData->length_of_visit,
-            'notes'          => $visitData->notes,
-        ]);
+        return $this->visitRepository->create(
+            $visitDTO->user->id,
+            $visitDTO->countryId,
+            $visitDTO->dateVisited,
+            $visitDTO->lengthOfVisit,
+            $visitDTO->notes
+        );
     }
 
     /**
-     * Update an existing visit record.
+     * Update an existing Visit record using individual properties from the DTO.
      */
-    public function updateVisit(Visit $visit, VisitDTO $visitData): Visit
+    public function updateVisit(Visit $visit, VisitDTO $visitDTO): Visit
     {
-        $visit->update([
-            'country_id'     => $visitData->country_id,
-            'date_visited'   => $visitData->date_visited,
-            'length_of_visit'=> $visitData->length_of_visit,
-            'notes'          => $visitData->notes,
-        ]);
-
-        return $visit;
+        return $this->visitRepository->update(
+            $visit,
+            $visitDTO->countryId,
+            $visitDTO->dateVisited,
+            $visitDTO->lengthOfVisit,
+            $visitDTO->notes
+        );
     }
 
     /**
-     * Delete a visit.
-     *
-     * @param Visit $visit
-     * @return void
+     * Delete the specified Visit record.
      */
-    public function deleteVisit(Visit $visit): void
+    public function deleteVisit(Visit $visit): bool
     {
-        $visit->delete();
+        return $this->visitRepository->delete($visit);
+    }
+
+    /**
+     * Retrieve all Visit records.
+     */
+    public function getAllVisits(): Collection
+    {
+        return $this->visitRepository->all();
     }
 }
