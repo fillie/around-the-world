@@ -4,57 +4,62 @@ namespace App\Http\Controllers;
 
 use App\DTOs\VisitDTO;
 use App\Http\Requests\VisitRequest;
+use App\Http\Resources\VisitResource;
 use App\Models\Visit;
 use App\Services\VisitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
-
 class VisitController extends Controller
 {
-    protected VisitService $visitService;
-
     /**
      * Constructor.
      */
-    public function __construct(VisitService $visitService)
-    {
-        $this->visitService = $visitService;
-    }
+    public function __construct(
+        protected VisitService $visitService
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
     public function index(): JsonResponse
     {
-        return response()->json(['data' => Visit::owned()->get()]);
+        return response()->json([
+            'data' => $this->visitService->getAllVisits()
+        ]);
     }
 
     /**
-     * Store our visit.
+     * Store a new visit.
      *
      * @param VisitRequest $request
      * @return JsonResponse
      */
     public function store(VisitRequest $request): JsonResponse
     {
-        $visit = $this->visitService->createVisit(VisitDTO::fromRequest($request->all()));
+        $visit = $this->visitService->createVisit(new VisitDTO(
+            user: $request->user(),
+            countryId: (int) $request->input('country_id'),
+            dateVisited: $request->input('date_visited'),
+            lengthOfVisit: (int) $request->input('length_of_visit'),
+            notes: $request->input('notes')
+        ));
 
         return response()->json([
             'message' => 'Visit recorded successfully.',
-            'data' => $visit
+            'data' => VisitResource::make($visit)
         ], 201);
     }
-
 
     /**
      * Display the specified resource.
      */
     public function show(Visit $visit): JsonResponse
     {
-        return response()->json(['data' => $visit]);
+        return response()->json([
+            'data' => $visit
+        ]);
     }
-
 
     /**
      * Update an existing visit.
@@ -65,11 +70,17 @@ class VisitController extends Controller
      */
     public function update(VisitRequest $request, Visit $visit): JsonResponse
     {
-        $visit = $this->visitService->updateVisit($visit, VisitDTO::fromRequest($request->all()));
+        $visit = $this->visitService->updateVisit($visit, new VisitDTO(
+            user: $request->user(),
+            countryId: (int) $request->input('country_id'),
+            dateVisited: $request->input('date_visited'),
+            lengthOfVisit: (int) $request->input('length_of_visit'),
+            notes: $request->input('notes')
+        ));
 
         return response()->json([
             'message' => 'Visit updated successfully.',
-            'data' => $visit
+            'data' => VisitResource::make($visit)
         ]);
     }
 

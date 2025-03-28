@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\VisitRepositoryInterface;
+use App\Repositories\Eloquent\EloquentVisitRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +13,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            VisitRepositoryInterface::class,
+            EloquentVisitRepository::class
+        );
     }
 
     /**

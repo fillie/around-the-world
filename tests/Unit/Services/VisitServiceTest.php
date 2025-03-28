@@ -3,70 +3,88 @@
 namespace Tests\Unit\Services;
 
 use App\DTOs\VisitDTO;
-use App\Models\Visit;
 use App\Models\User;
+use App\Models\Visit;
 use App\Services\VisitService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Repositories\Contracts\VisitRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Mockery;
 use Tests\TestCase;
 
 class VisitServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
-    protected VisitService $visitService;
-
-    protected function setUp(): void
+    public function test_create_visit_calls_repository_with_correct_data()
     {
-        parent::setUp();
-        $this->visitService = new VisitService();
-        $user = User::factory()->create();
-        $this->actingAs($user);
-    }
-
-    public function testCreateVisit(): void
-    {
+        $user = User::factory()->make(['id' => 1]);
         $dto = new VisitDTO(
-            country_id: 1,
-            date_visited: '2025-03-14',
-            length_of_visit: 7,
-            notes: 'Test visit'
+            user: $user,
+            countryId: 10,
+            dateVisited: '2025-03-28',
+            lengthOfVisit: 5,
+            notes: 'Trip note'
         );
 
-        $visit = $this->visitService->createVisit($dto);
+        $mockRepo = Mockery::mock(VisitRepositoryInterface::class);
+        $mockRepo->shouldReceive('create')
+            ->once()
+            ->with(1, 10, '2025-03-28', 5, 'Trip note')
+            ->andReturn(new Visit());
 
-        $this->assertDatabaseHas('visits', [
-            'id'             => $visit->id,
-            'user_id'        => Auth::id(),
-            'country_id'     => 1,
-            'date_visited'   => '2025-03-14',
-            'length_of_visit'=> 7,
-            'notes'          => 'Test visit'
-        ]);
+        $service = new VisitService($mockRepo);
+        $result = $service->createVisit($dto);
+
+        $this->assertInstanceOf(Visit::class, $result);
     }
 
-    public function testUpdateVisit(): void
+    public function test_update_visit_calls_repository_with_correct_data()
     {
-        $visit = Visit::factory()->create([
-            'user_id'        => Auth::id(),
-            'country_id'     => 1,
-            'date_visited'   => '2025-03-14',
-            'length_of_visit'=> 7,
-            'notes'          => 'Old note'
-        ]);
-
+        $visit = Mockery::mock(Visit::class);
         $dto = new VisitDTO(
-            country_id: 2,
-            date_visited: '2025-03-15',
-            length_of_visit: 10,
+            user: User::factory()->make(),
+            countryId: 2,
+            dateVisited: '2025-03-28',
+            lengthOfVisit: 3,
             notes: 'Updated note'
         );
 
-        $updatedVisit = $this->visitService->updateVisit($visit, $dto);
+        $mockRepo = Mockery::mock(VisitRepositoryInterface::class);
+        $mockRepo->shouldReceive('update')
+            ->once()
+            ->with($visit, 2, '2025-03-28', 3, 'Updated note')
+            ->andReturn($visit);
 
-        $this->assertEquals(2, $updatedVisit->country_id);
-        $this->assertEquals('2025-03-15', $updatedVisit->date_visited);
-        $this->assertEquals(10, $updatedVisit->length_of_visit);
-        $this->assertEquals('Updated note', $updatedVisit->notes);
+        $service = new VisitService($mockRepo);
+        $result = $service->updateVisit($visit, $dto);
+
+        $this->assertSame($visit, $result);
+    }
+
+    public function test_delete_visit_calls_repository()
+    {
+        $visit = Mockery::mock(Visit::class);
+
+        $mockRepo = Mockery::mock(VisitRepositoryInterface::class);
+        $mockRepo->shouldReceive('delete')
+            ->once()
+            ->with($visit)
+            ->andReturn(true);
+
+        $service = new VisitService($mockRepo);
+        $result = $service->deleteVisit($visit);
+
+        $this->assertTrue($result);
+    }
+
+    public function test_get_all_visits_returns_collection()
+    {
+        $mockRepo = Mockery::mock(VisitRepositoryInterface::class);
+        $mockRepo->shouldReceive('all')
+            ->once()
+            ->andReturn(new Collection());
+
+        $service = new VisitService($mockRepo);
+        $result = $service->getAllVisits();
+
+        $this->assertInstanceOf(Collection::class, $result);
     }
 }
