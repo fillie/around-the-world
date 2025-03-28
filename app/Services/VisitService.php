@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\VisitDTO as VisitDTO;
+use App\DTOs\VisitDTO as VisitDTO;
 use App\Models\Visit;
 use Illuminate\Support\Facades\Auth;
 

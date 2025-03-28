@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\DTO\VisitDTO;
+use App\DTOs\VisitDTO;
 use App\Models\Visit;
 use App\Models\User;
 use App\Services\VisitService;
