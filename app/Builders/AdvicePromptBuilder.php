@@ -6,12 +6,13 @@ use App\DTOs\AdviceRequestDTO;
 
 class AdvicePromptBuilder
 {
-    public static function build(AdviceRequestDTO $dto): string
+    /**
+     * @param AdviceRequestDTO $adviceRequest
+     * @return string
+     */
+    public static function build(AdviceRequestDTO $adviceRequest): string
     {
-        $countries = implode(', ', $dto->countries);
-
-        return "
-            Generate travel advice for {$countries}
-            from {$dto->startDate} to {$dto->endDate}";
+        $countries = implode(', ', $adviceRequest->countries);
+        return "Generate travel advice for {$countries} from {$adviceRequest->startDate} to {$adviceRequest->endDate}";
     }
 }
