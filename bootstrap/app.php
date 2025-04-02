@@ -22,6 +22,12 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
     })
+    ->withMiddleware(function (Middleware $middleware) {
+        // todo reimplement with santctum
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+
     })->create();
