@@ -20,13 +20,14 @@ readonly class AdviceService
 
     /**
      * @param AdviceRequestDTO $adviceRequest
+     * @param User $user
      * @return Advice
      */
-    public function create(AdviceRequestDTO $adviceRequest): Advice
+    public function create(AdviceRequestDTO $adviceRequest, User $user): Advice
     {
         // todo implement user
         $adviceRecord = $this->adviceRepository->create(
-            User::find(1),
+            $user,
             $adviceRequest->countries[0],
             Carbon::parse($adviceRequest->startDate),
             Carbon::parse($adviceRequest->endDate)

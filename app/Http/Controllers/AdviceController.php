@@ -6,6 +6,7 @@ use App\DTOs\AdviceRequestDTO;
 use App\Http\Requests\GenerateAdviceRequest;
 use App\Http\Resources\AdviceResource;
 use App\Models\Advice;
+use App\Models\User;
 use App\Services\AdviceService;
 use Illuminate\Http\JsonResponse;
 
@@ -27,7 +28,7 @@ class AdviceController extends Controller
      */
     public function store(GenerateAdviceRequest $request): JsonResponse
     {
-        $advice = $this->adviceService->create(AdviceRequestDTO::fromRequest($request->all()));
+        $advice = $this->adviceService->create(AdviceRequestDTO::fromRequest($request->all()), User::find(1));
 
         // todo fix magic method
         return response()->json([
