@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Visit extends Model
+class Advice extends Model
 {
-    use HasFactory;
+    /**
+     * All mass assignable properties.
+     *
+     * @var string[]
+     */
     protected $fillable = [
         'user_id',
-        'country_id',
-        'date_visited',
-        'length_of_visit',
-        'notes'
+        'country',
+        'content',
+        'start_date',
+        'end_date',
     ];
 
     /**

@@ -2,8 +2,8 @@
 
 namespace App\Clients;
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Exception;
 
 class OpenAIClient
 {
@@ -17,28 +17,35 @@ class OpenAIClient
         $this->model = config('services.openai.model');
     }
 
-
     /**
-     * Sends a prompt to OpenAI and returns the response.
-     * @throws ConnectionException
+     * @param string $prompt
+     * @param int $maxTokens
+     * @param float $temperature
+     * @return string
+     * @throws Exception
      */
-    public function requestCompletion(string $prompt, int $maxTokens = 500, float $temperature = 0.7): array
+    public function requestCompletion(string $prompt, int $maxTokens = 500, float $temperature = 0.7): string
     {
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,
             'Content-Type' => 'application/json',
         ])->post($this->baseUrl, [
             'model' => $this->model,
-            'prompt' => $prompt,
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => $prompt,
+                ],
+            ],
             'max_tokens' => $maxTokens,
             'temperature' => $temperature,
         ]);
 
         if ($response->failed()) {
-            return ['error' => 'Failed to generate response from OpenAI'];
+            throw new Exception($response->body());
         }
 
-        return $response->json();
+        return $response->json('choices.0.message.content');
     }
 }
 
