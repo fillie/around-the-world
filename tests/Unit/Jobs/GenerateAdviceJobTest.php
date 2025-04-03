@@ -3,7 +3,7 @@
 namespace Tests\Unit\Jobs;
 
 use App\Builders\AdvicePromptBuilder;
-use App\Clients\OpenAIClient;
+use App\Clients\OpenAiClient;
 use App\DTOs\AdviceRequestDTO;
 use App\Jobs\GenerateAdviceJob;
 use App\Models\Advice;
@@ -11,12 +11,12 @@ use App\Repositories\Contracts\AdviceRepositoryInterface;
 use Mockery;
 use Psr\Log\LoggerInterface;
 use Tests\TestCase;
+use Exception;
 
 class GenerateAdviceJobTest extends TestCase
 {
     public function test_handle_calls_openai_and_updates_advice()
     {
-        // Arrange
         $dto = new AdviceRequestDTO([
             'France'
         ],
@@ -25,7 +25,7 @@ class GenerateAdviceJobTest extends TestCase
         );
         $advice = Mockery::mock(Advice::class);
         $repository = Mockery::mock(AdviceRepositoryInterface::class);
-        $openAi = Mockery::mock(OpenAIClient::class);
+        $openAi = Mockery::mock(OpenAiClient::class);
         $logger = Mockery::mock(LoggerInterface::class);
 
         $prompt = (new AdvicePromptBuilder())->build($dto);
@@ -55,14 +55,14 @@ class GenerateAdviceJobTest extends TestCase
         );
         $advice = Mockery::mock(Advice::class);
         $repository = Mockery::mock(AdviceRepositoryInterface::class);
-        $openAI = Mockery::mock(OpenAIClient::class);
+        $openAI = Mockery::mock(OpenAiClient::class);
         $logger = Mockery::mock(LoggerInterface::class);
 
         $prompt = (new AdvicePromptBuilder())->build($dto);
 
         $openAI->shouldReceive('requestCompletion')
             ->with($prompt)
-            ->andThrow(new \Exception('AI failure'));
+            ->andThrow(new Exception('AI failure'));
 
         $logger->shouldReceive('error')
             ->once()

@@ -2,12 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Clients\OpenAIClient;
+use App\Clients\OpenAiClient;
 use App\Builders\AdvicePromptBuilder;
 use App\DTOs\AdviceRequestDTO;
 use App\Models\Advice;
 use App\Repositories\Contracts\AdviceRepositoryInterface;
-use App\Services\AdviceService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,7 +35,7 @@ class GenerateAdviceJob implements ShouldQueue
      * @param LoggerInterface $logger
      * @return void
      */
-    public function handle(OpenAIClient $openAIClient, LoggerInterface $logger): void
+    public function handle(OpenAiClient $openAIClient, LoggerInterface $logger): void
     {
         try {
             $prompt = (new AdvicePromptBuilder())->build($this->adviceRequest);
