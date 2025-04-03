@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\DTOs\WishlistDTO;
-use App\DTOs\WishlistCountryDTO;
 use App\Http\Requests\StoreWishlistRequest;
 use App\Http\Resources\WishlistResource;
-use App\Models\Country;
 use App\Models\Wishlist;
 use App\Services\WishlistService;
+use App\Mappers\WishlistMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -16,9 +14,11 @@ class WishlistController extends Controller
 {
     /**
      * @param WishlistService $wishlistService
+     * @param WishlistMapper $wishlistMapper
      */
     public function __construct(
-        protected WishlistService $wishlistService
+        protected WishlistService $wishlistService,
+        protected WishlistMapper $wishlistMapper
     ) {}
 
     /**
@@ -34,31 +34,14 @@ class WishlistController extends Controller
     }
 
     /**
-     * todo refactor to inject the country repository
-     *
      * @param StoreWishlistRequest $request
      * @return JsonResponse
      */
     public function store(StoreWishlistRequest $request): JsonResponse
     {
-        $wishlistDTO = new WishlistDTO(
-            user: $request->user(),
-            name: $request->input('name'),
-            notes: $request->input('notes'),
-            countries: array_map(
-                function ($data) {
-                    return new WishlistCountryDTO(
-                        country: Country::find($data['country_id']),
-                        startDate: $data['start_date'],
-                        endDate: $data['end_date'],
-                        notes: $data['notes'] ?? null
-                    );
-                },
-                $request->input('countries', [])
-            )
+        $wishlist = $this->wishlistService->createWishlist(
+            $this->wishlistMapper->mapRequestToWishlistDTO($request)
         );
-
-        $wishlist = $this->wishlistService->createWishlist($wishlistDTO);
 
         return response()->json([
             'message' => 'Wishlist created successfully.',
@@ -80,32 +63,15 @@ class WishlistController extends Controller
     }
 
     /**
-     * todo consider refactoring to a mapper here
-     *
      * @param StoreWishlistRequest $request
      * @param Wishlist $wishlist
      * @return JsonResponse
      */
     public function update(StoreWishlistRequest $request, Wishlist $wishlist): JsonResponse
     {
-        $wishlistDTO = new WishlistDTO(
-            user: $request->user(),
-            name: $request->input('name'),
-            notes: $request->input('notes'),
-            countries: array_map(
-                function ($data) {
-                    return new WishlistCountryDTO(
-                        country: Country::find($data['country_id']),
-                        startDate: $data['start_date'],
-                        endDate: $data['end_date'],
-                        notes: $data['notes'] ?? null
-                    );
-                },
-                $request->input('countries', [])
-            )
+        $wishlist = $this->wishlistService->updateWishlist($wishlist,
+            $this->wishlistMapper->mapRequestToWishlistDTO($request)
         );
-
-        $wishlist = $this->wishlistService->updateWishlist($wishlist, $wishlistDTO);
 
         return response()->json([
             'message' => 'Wishlist updated successfully.',
