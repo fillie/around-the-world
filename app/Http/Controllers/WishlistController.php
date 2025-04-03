@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\WishlistDTO;
+use App\DTOs\WishlistCountryDTO;
 use App\Http\Requests\StoreWishlistRequest;
 use App\Http\Resources\WishlistResource;
+use App\Models\Country;
 use App\Models\Wishlist;
 use App\Services\WishlistService;
 use Illuminate\Http\JsonResponse;
@@ -13,14 +15,14 @@ use Illuminate\Http\Response;
 class WishlistController extends Controller
 {
     /**
-     * Constructor.
+     * @param WishlistService $wishlistService
      */
     public function __construct(
         protected WishlistService $wishlistService
     ) {}
 
     /**
-     * Display a listing of the resource.
+     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -32,13 +34,31 @@ class WishlistController extends Controller
     }
 
     /**
-     * Store a new wishlist.
+     * todo refactor to inject the country repository
+     *
+     * @param StoreWishlistRequest $request
+     * @return JsonResponse
      */
     public function store(StoreWishlistRequest $request): JsonResponse
     {
-        $wishlist = $this->wishlistService->createWishlist(
-            WishlistDTO::fromRequest($request)
+        $wishlistDTO = new WishlistDTO(
+            user: $request->user(),
+            name: $request->input('name'),
+            notes: $request->input('notes'),
+            countries: array_map(
+                function ($data) {
+                    return new WishlistCountryDTO(
+                        country: Country::find($data['country_id']),
+                        startDate: $data['start_date'],
+                        endDate: $data['end_date'],
+                        notes: $data['notes'] ?? null
+                    );
+                },
+                $request->input('countries', [])
+            )
         );
+
+        $wishlist = $this->wishlistService->createWishlist($wishlistDTO);
 
         return response()->json([
             'message' => 'Wishlist created successfully.',
@@ -47,7 +67,8 @@ class WishlistController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @param Wishlist $wishlist
+     * @return JsonResponse
      */
     public function show(Wishlist $wishlist): JsonResponse
     {
@@ -59,14 +80,32 @@ class WishlistController extends Controller
     }
 
     /**
-     * Update an existing wishlist.
+     * todo consider refactoring to a mapper here
+     *
+     * @param StoreWishlistRequest $request
+     * @param Wishlist $wishlist
+     * @return JsonResponse
      */
     public function update(StoreWishlistRequest $request, Wishlist $wishlist): JsonResponse
     {
-        $wishlist = $this->wishlistService->updateWishlist(
-            $wishlist,
-            WishlistDTO::fromRequest($request)
+        $wishlistDTO = new WishlistDTO(
+            user: $request->user(),
+            name: $request->input('name'),
+            notes: $request->input('notes'),
+            countries: array_map(
+                function ($data) {
+                    return new WishlistCountryDTO(
+                        country: Country::find($data['country_id']),
+                        startDate: $data['start_date'],
+                        endDate: $data['end_date'],
+                        notes: $data['notes'] ?? null
+                    );
+                },
+                $request->input('countries', [])
+            )
         );
+
+        $wishlist = $this->wishlistService->updateWishlist($wishlist, $wishlistDTO);
 
         return response()->json([
             'message' => 'Wishlist updated successfully.',
@@ -75,7 +114,8 @@ class WishlistController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param Wishlist $wishlist
+     * @return Response
      */
     public function destroy(Wishlist $wishlist): Response
     {

@@ -5,7 +5,7 @@ namespace Tests\Unit\DTOs;
 use App\DTOs\AdviceRequestDTO;
 use Tests\TestCase;
 
-class AdviceDtoTest extends TestCase
+class AdviceDTOTest extends TestCase
 {
     public function test_dto_properties_are_correctly_assigned()
     {
