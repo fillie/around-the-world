@@ -2,19 +2,23 @@
 
 namespace App\Clients;
 
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\Factory as HttpClient;
 use Exception;
 
 class OpenAiClient
 {
-    private string $baseUrl;
-    private string $apiKey;
-    private string $model;
-
-    public function __construct() {
-        $this->baseUrl = config('services.openai.url');
-        $this->apiKey = config('services.openai.key');
-        $this->model = config('services.openai.model');
+    /**
+     * @param HttpClient $http
+     * @param string $baseUrl
+     * @param string $apiKey
+     * @param string $model
+     */
+    public function __construct(
+        private readonly HttpClient $http,
+        private readonly string     $baseUrl,
+        private readonly string     $apiKey,
+        private readonly string     $model
+    ) {
     }
 
     /**
@@ -26,7 +30,7 @@ class OpenAiClient
      */
     public function requestCompletion(string $prompt, int $maxTokens = 500, float $temperature = 0.7): string
     {
-        $response = Http::withHeaders([
+        $response = $this->http->withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,
             'Content-Type' => 'application/json',
         ])->post($this->baseUrl, [
@@ -48,4 +52,3 @@ class OpenAiClient
         return $response->json('choices.0.message.content');
     }
 }
-

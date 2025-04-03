@@ -31,15 +31,15 @@ class GenerateAdviceJob implements ShouldQueue
     ) {}
 
     /**
-     * @param OpenAIClient $openAIClient
+     * @param OpenAiClient $openAiClient
      * @param LoggerInterface $logger
      * @return void
      */
-    public function handle(OpenAiClient $openAIClient, LoggerInterface $logger): void
+    public function handle(OpenAiClient $openAiClient, LoggerInterface $logger): void
     {
         try {
             $prompt = (new AdvicePromptBuilder())->build($this->adviceRequest);
-            $this->adviceRepository->update($this->adviceRecord, $openAIClient->requestCompletion($prompt));
+            $this->adviceRepository->update($this->adviceRecord, $openAiClient->requestCompletion($prompt));
         } catch (Exception $e) {
             $logger->error($e->getMessage());
         }
