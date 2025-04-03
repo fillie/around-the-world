@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Clients\OpenAiClient;
 use App\Repositories\Contracts\AdviceRepositoryInterface;
 use App\Repositories\Contracts\VisitRepositoryInterface;
 use App\Repositories\Eloquent\EloquentAdviceRepository;
 use App\Repositories\Eloquent\EloquentVisitRepository;
+use Illuminate\Http\Client\Factory as HttpClient;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,15 @@ class AppServiceProvider extends ServiceProvider
             AdviceRepositoryInterface::class,
             EloquentAdviceRepository::class
         );
+
+        $this->app->bind(OpenAiClient::class, function () {
+            return new OpenAiClient(
+                app(HttpClient::class),
+                config('services.openai.url'),
+                config('services.openai.key'),
+                config('services.openai.model'),
+            );
+        });
     }
 
     /**
