@@ -6,7 +6,7 @@ use App\DTOs\VisitDTO;
 use App\Models\User;
 use Tests\TestCase;
 
-class VisitDTOTest extends TestCase
+class VisitDtoTest extends TestCase
 {
     public function test_dto_properties_are_correctly_assigned()
     {

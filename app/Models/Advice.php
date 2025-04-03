@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Advice extends Model
 {
+    use hasFactory;
     /**
      * All mass assignable properties.
      *
@@ -31,4 +33,12 @@ class Advice extends Model
         $userId = $userId ?: auth()->id();
         return $query->where('user_id', $userId);
     }
+
+    /**
+     * @var string[]
+     */
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
 }

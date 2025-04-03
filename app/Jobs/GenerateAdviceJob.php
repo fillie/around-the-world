@@ -7,13 +7,14 @@ use App\Builders\AdvicePromptBuilder;
 use App\DTOs\AdviceRequestDTO;
 use App\Models\Advice;
 use App\Repositories\Contracts\AdviceRepositoryInterface;
+use App\Services\AdviceService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class GenerateAdviceJob implements ShouldQueue
 {
@@ -32,15 +33,16 @@ class GenerateAdviceJob implements ShouldQueue
 
     /**
      * @param OpenAIClient $openAIClient
+     * @param LoggerInterface $logger
      * @return void
      */
-    public function handle(OpenAIClient $openAIClient): void
+    public function handle(OpenAIClient $openAIClient, LoggerInterface $logger): void
     {
         try {
             $prompt = (new AdvicePromptBuilder())->build($this->adviceRequest);
             $this->adviceRepository->update($this->adviceRecord, $openAIClient->requestCompletion($prompt));
-        } Catch (Exception $e) {
-            Log::error($e->getMessage());
+        } catch (Exception $e) {
+            $logger->error($e->getMessage());
         }
     }
 }
