@@ -12,7 +12,7 @@ class VisitFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'country_id' => $this->faker->numberBetween(1, 250),
+            'country_id' => 1,
             'date_visited' => $this->faker->date(),
             'length_of_visit' => $this->faker->numberBetween(1, 30),
             'notes' => $this->faker->optional()->sentence(),
