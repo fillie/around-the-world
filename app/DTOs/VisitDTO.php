@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-use App\Http\Requests\VisitRequest;
+use App\Http\Requests\StoreVisitRequest;
 use App\Models\User;
 
 final class VisitDTO
@@ -25,10 +25,10 @@ final class VisitDTO
     /**
      * Create a DTO from a form request.
      *
-     * @param VisitRequest $request
+     * @param StoreVisitRequest $request
      * @return self
      */
-    public static function fromRequest(VisitRequest $request): self
+    public static function fromRequest(StoreVisitRequest $request): self
     {
         return new self(
             user: $request->user(),

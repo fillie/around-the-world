@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\AdviceRequestDTO;
-use App\Http\Requests\GenerateAdviceRequest;
+use App\Http\Requests\StoreAdviceRequest;
 use App\Http\Resources\AdviceResource;
 use App\Models\Advice;
 use App\Models\User;
@@ -26,7 +26,7 @@ class AdviceController extends Controller
     /**
      * Generate new travel advice for multiple countries and a specific date range.
      */
-    public function store(GenerateAdviceRequest $request): JsonResponse
+    public function store(StoreAdviceRequest $request): JsonResponse
     {
         $advice = $this->adviceService->create(AdviceRequestDTO::fromRequest($request->all()), User::find(1));
 
